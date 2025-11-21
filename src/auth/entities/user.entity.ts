@@ -6,13 +6,16 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity('categories')
-export class Category {
+@Entity('users')
+export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('uuid', { nullable: true })
-  userId: string | null;
+  @Column({ unique: true })
+  email: string;
+
+  @Column()
+  password: string;
 
   @Column()
   name: string;

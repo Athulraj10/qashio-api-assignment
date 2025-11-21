@@ -7,8 +7,10 @@ import { AppService } from './app.service';
 import { BudgetsModule } from './budgets/budgets.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { CategoriesModule } from './categories/categories.module';
+import { AuthModule } from './auth/auth.module';
 import { Transaction } from './transactions/entities/transaction.entity';
 import { Category } from './categories/entities/category.entity';
+import { User } from './auth/entities/user.entity';
 
 @Module({
   imports: [
@@ -30,7 +32,7 @@ import { Category } from './categories/entities/category.entity';
             username: url.username,
             password: url.password,
             database: url.pathname.slice(1), // Remove leading '/'
-            entities: [Transaction, Category],
+            entities: [Transaction, Category, User],
             synchronize: true, // Set to false in production
             logging: false,
           };
@@ -51,6 +53,7 @@ import { Category } from './categories/entities/category.entity';
       },
       inject: [ConfigService],
     }),
+    AuthModule,
     BudgetsModule,
     TransactionsModule,
     CategoriesModule,

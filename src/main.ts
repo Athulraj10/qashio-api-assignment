@@ -35,9 +35,11 @@ async function bootstrap() {
     .setTitle('Qashio Expense Tracker API')
     .setDescription('A comprehensive API for tracking income, expenses, budgets, and categories')
     .setVersion('1.0')
+    .addTag('auth', 'Authentication endpoints')
     .addTag('transactions', 'Transaction management endpoints')
     .addTag('categories', 'Category management endpoints')
     .addTag('budgets', 'Budget management endpoints')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

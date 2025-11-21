@@ -9,23 +9,31 @@ import {
   Query,
   UsePipes,
   ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { GetUser } from '../auth/decorators/get-user.decorator';
 
 @ApiTags('transactions')
 @Controller('transactions')
 @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new transaction' })
   @ApiResponse({ status: 201, description: 'Transaction created successfully' })
-  create(@Body() createTransactionDto: CreateTransactionDto) {
-    return this.transactionsService.create(createTransactionDto);
+  create(
+    @Body() createTransactionDto: CreateTransactionDto,
+    @GetUser() user: { userId: string; email: string },
+  ) {
+    return this.transactionsService.create(createTransactionDto, user.userId);
   }
 
   @Get()
@@ -42,6 +50,7 @@ export class TransactionsController {
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
     @Query('search') search?: string,
+    @GetUser() user?: { userId: string; email: string },
   ) {
     return this.transactionsService.findAll({
       type,
@@ -49,7 +58,7 @@ export class TransactionsController {
       startDate,
       endDate,
       search,
-    });
+    }, user?.userId);
   }
 
   @Get('summary')
@@ -62,30 +71,38 @@ export class TransactionsController {
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
     @Query('type') type?: 'income' | 'expense',
+    @GetUser() user?: { userId: string; email: string },
   ) {
     return this.transactionsService.getSummary({
       startDate,
       endDate,
       type,
-    });
+    }, user?.userId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.transactionsService.findOne(id);
+  findOne(
+    @Param('id') id: string,
+    @GetUser() user?: { userId: string; email: string },
+  ) {
+    return this.transactionsService.findOne(id, user?.userId);
   }
 
   @Put(':id')
   update(
     @Param('id') id: string,
     @Body() updateTransactionDto: UpdateTransactionDto,
+    @GetUser() user?: { userId: string; email: string },
   ) {
-    return this.transactionsService.update(id, updateTransactionDto);
+    return this.transactionsService.update(id, updateTransactionDto, user?.userId);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    this.transactionsService.remove(id);
+  remove(
+    @Param('id') id: string,
+    @GetUser() user?: { userId: string; email: string },
+  ) {
+    this.transactionsService.remove(id, user?.userId);
     return { message: 'Transaction deleted successfully' };
   }
 }

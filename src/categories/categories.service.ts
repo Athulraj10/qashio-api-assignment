@@ -11,10 +11,14 @@ export class CategoriesService {
     private readonly categoryRepository: Repository<Category>,
   ) {}
 
-  async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
-    // Check if category already exists
+  async create(createCategoryDto: CreateCategoryDto, userId: string | null): Promise<Category> {
+    // Check if category already exists for this user
+    const where: any = { name: createCategoryDto.name };
+    if (userId) {
+      where.userId = userId;
+    }
     const existingCategory = await this.categoryRepository.findOne({
-      where: { name: createCategoryDto.name },
+      where,
     });
 
     if (existingCategory) {
@@ -23,20 +27,32 @@ export class CategoriesService {
       );
     }
 
-    const category = this.categoryRepository.create(createCategoryDto);
+    const category = this.categoryRepository.create({
+      ...createCategoryDto,
+      userId,
+    });
     return await this.categoryRepository.save(category);
   }
 
-  async findAll(): Promise<Category[]> {
+  async findAll(userId?: string | null): Promise<Category[]> {
+    // Always filter by userId - if not provided, return empty array (security: don't show all users' data)
+    if (!userId) {
+      return [];
+    }
+    const where: any = { userId };
     return await this.categoryRepository.find({
+      where,
       order: { name: 'ASC' },
     });
   }
 
-  async findOne(id: string): Promise<Category> {
-    const category = await this.categoryRepository.findOne({
-      where: { id },
-    });
+  async findOne(id: string, userId?: string | null): Promise<Category> {
+    const where: any = { id };
+    if (userId) {
+      where.userId = userId;
+    }
+    const findOptions: any = { where };
+    const category = await this.categoryRepository.findOne(findOptions);
     if (!category) {
       throw new NotFoundException(`Category with ID ${id} not found`);
     }

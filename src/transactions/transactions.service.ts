@@ -12,8 +12,9 @@ export class TransactionsService {
     private readonly transactionRepository: Repository<Transaction>,
   ) {}
 
-  async create(createTransactionDto: CreateTransactionDto): Promise<Transaction> {
+  async create(createTransactionDto: CreateTransactionDto, userId: string | null): Promise<Transaction> {
     const transaction = this.transactionRepository.create({
+      userId,
       amount: createTransactionDto.amount,
       category: createTransactionDto.category,
       type: createTransactionDto.type,
@@ -29,8 +30,14 @@ export class TransactionsService {
     startDate?: string;
     endDate?: string;
     search?: string;
-  }): Promise<Transaction[]> {
+  }, userId?: string | null): Promise<Transaction[]> {
     const queryBuilder = this.transactionRepository.createQueryBuilder('transaction');
+
+    // Always filter by userId - if not provided, return empty array (security: don't show all users' data)
+    if (!userId) {
+      return [];
+    }
+    queryBuilder.andWhere('transaction.userId = :userId', { userId });
 
     if (filters?.type) {
       queryBuilder.andWhere('transaction.type = :type', { type: filters.type });
@@ -65,7 +72,7 @@ export class TransactionsService {
     startDate?: string;
     endDate?: string;
     type?: 'income' | 'expense';
-  }): Promise<{
+  }, userId?: string | null): Promise<{
     totalIncome: number;
     totalExpenses: number;
     balance: number;
@@ -74,6 +81,19 @@ export class TransactionsService {
     byMonth: Array<{ month: string; income: number; expenses: number }>;
   }> {
     const queryBuilder = this.transactionRepository.createQueryBuilder('transaction');
+
+    // Always filter by userId - if not provided, return empty summary (security: don't show all users' data)
+    if (!userId) {
+      return {
+        totalIncome: 0,
+        totalExpenses: 0,
+        balance: 0,
+        transactionCount: 0,
+        byCategory: [],
+        byMonth: [],
+      };
+    }
+    queryBuilder.andWhere('transaction.userId = :userId', { userId });
 
     if (filters?.startDate) {
       queryBuilder.andWhere('transaction.date >= :startDate', { startDate: filters.startDate });
@@ -143,9 +163,13 @@ export class TransactionsService {
     };
   }
 
-  async findOne(id: string): Promise<Transaction> {
+  async findOne(id: string, userId?: string | null): Promise<Transaction> {
+    const where: any = { id };
+    if (userId) {
+      where.userId = userId;
+    }
     const transaction = await this.transactionRepository.findOne({
-      where: { id },
+      where,
     });
     if (!transaction) {
       throw new NotFoundException(`Transaction with ID ${id} not found`);
@@ -156,8 +180,9 @@ export class TransactionsService {
   async update(
     id: string,
     updateTransactionDto: UpdateTransactionDto,
+    userId?: string | null,
   ): Promise<Transaction> {
-    const transaction = await this.findOne(id);
+    const transaction = await this.findOne(id, userId);
     
     if (updateTransactionDto.amount !== undefined) {
       transaction.amount = updateTransactionDto.amount;
@@ -178,8 +203,8 @@ export class TransactionsService {
     return await this.transactionRepository.save(transaction);
   }
 
-  async remove(id: string): Promise<void> {
-    const transaction = await this.findOne(id);
+  async remove(id: string, userId?: string | null): Promise<void> {
+    const transaction = await this.findOne(id, userId);
     await this.transactionRepository.remove(transaction);
   }
 }

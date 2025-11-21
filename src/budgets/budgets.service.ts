@@ -18,12 +18,13 @@ export class BudgetsService {
     type: 'income' | 'expense';
   }> = [];
 
-  create(createBudgetDto: CreateBudgetDto): Budget {
+  create(createBudgetDto: CreateBudgetDto, userId: string): Budget {
     const now = new Date().toISOString();
     const startDate = createBudgetDto.startDate || now;
 
     const budget: Budget = {
       id: uuidv4(),
+      userId,
       category: createBudgetDto.category,
       amount: createBudgetDto.amount,
       timePeriod: createBudgetDto.timePeriod,
@@ -37,39 +38,44 @@ export class BudgetsService {
     return budget;
   }
 
-  findAll(): Budget[] {
-    return budgets;
+  findAll(userId?: string): Budget[] {
+    // Always filter by userId - if not provided, return empty array (security: don't show all users' data)
+    if (!userId) {
+      return [];
+    }
+    return budgets.filter((b) => b.userId === userId);
   }
 
-  findOne(id: string): Budget {
-    const budget = budgets.find((b) => b.id === id);
+  findOne(id: string, userId?: string): Budget {
+    const budget = budgets.find((b) => {
+      if (userId) {
+        return b.id === id && b.userId === userId;
+      }
+      return b.id === id;
+    });
     if (!budget) {
       throw new NotFoundException(`Budget with ID ${id} not found`);
     }
     return budget;
   }
 
-  update(id: string, updateBudgetDto: UpdateBudgetDto): Budget {
-    const budgetIndex = budgets.findIndex((b) => b.id === id);
-    if (budgetIndex === -1) {
-      throw new NotFoundException(`Budget with ID ${id} not found`);
-    }
+  update(id: string, updateBudgetDto: UpdateBudgetDto, userId?: string): Budget {
+    const budget = this.findOne(id, userId);
 
     const updatedBudget: Budget = {
-      ...budgets[budgetIndex],
+      ...budget,
       ...updateBudgetDto,
       updatedAt: new Date().toISOString(),
     };
 
+    const budgetIndex = budgets.findIndex((b) => b.id === id);
     budgets[budgetIndex] = updatedBudget;
     return updatedBudget;
   }
 
-  remove(id: string): void {
+  remove(id: string, userId?: string): void {
+    const budget = this.findOne(id, userId);
     const budgetIndex = budgets.findIndex((b) => b.id === id);
-    if (budgetIndex === -1) {
-      throw new NotFoundException(`Budget with ID ${id} not found`);
-    }
     budgets.splice(budgetIndex, 1);
   }
 
@@ -96,13 +102,14 @@ export class BudgetsService {
   }
 
   // Get all budgets with spending calculations
-  findAllWithSpending(): BudgetWithSpending[] {
-    return budgets.map((budget) => this.calculateSpending(budget));
+  findAllWithSpending(userId?: string): BudgetWithSpending[] {
+    const userBudgets = userId ? budgets.filter((b) => b.userId === userId) : budgets;
+    return userBudgets.map((budget) => this.calculateSpending(budget));
   }
 
   // Get a single budget with spending calculation
-  findOneWithSpending(id: string): BudgetWithSpending {
-    const budget = this.findOne(id);
+  findOneWithSpending(id: string, userId?: string): BudgetWithSpending {
+    const budget = this.findOne(id, userId);
     return this.calculateSpending(budget);
   }
 

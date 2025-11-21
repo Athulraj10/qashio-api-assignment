@@ -7,6 +7,7 @@ export enum TimePeriod {
 
 export interface Budget {
   id: string;
+  userId: string;
   category: string;
   amount: number;
   timePeriod: TimePeriod;
