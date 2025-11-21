@@ -1,0 +1,51 @@
+[
+  {
+    "id": "1",
+    "name": "Food & Dining"
+  },
+  {
+    "id": "2",
+    "name": "Shopping"
+  },
+  {
+    "id": "3",
+    "name": "Transportation"
+  },
+  {
+    "id": "4",
+    "name": "Bills & Utilities"
+  },
+  {
+    "id": "5",
+    "name": "Entertainment"
+  },
+  {
+    "id": "6",
+    "name": "Healthcare"
+  },
+  {
+    "id": "7",
+    "name": "Education"
+  },
+  {
+    "id": "8",
+    "name": "Travel"
+  },
+  {
+    "id": "9",
+    "name": "Salary"
+  },
+  {
+    "id": "10",
+    "name": "Freelance"
+  },
+  {
+    "id": "11",
+    "name": "Investment"
+  },
+  {
+    "id": "12",
+    "name": "Gift"
+  }
+]
+

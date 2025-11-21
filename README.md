@@ -1,354 +1,228 @@
-#  Qashio API - Backend Service
+# Qashio - Simple Expense Tracker
 
-A robust RESTful API built with **NestJS** for managing expenses, transactions, budgets, and categories with JWT authentication and comprehensive data validation.
+A comprehensive expense tracking application built with **NestJS** and **Next.js** that helps users manage their income, expenses, budgets, and categories with a modern, user-friendly interface.
 
 ---
 
 ##  Table of Contents
 
-- [Overview](#overview)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-- [API Endpoints](#api-endpoints)
-- [Authentication](#authentication)
-- [Database Schema](#database-schema)
-- [Environment Variables](#environment-variables)
-- [Development](#development)
-- [Testing](#testing)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Project Structure](#-project-structure)
+- [Prerequisites](#-prerequisites)
+- [Getting Started](#-getting-started)
+- [Running the Application](#-running-the-application)
+- [API Documentation](#-api-documentation)
+- [Features Overview](#-features-overview)
+- [Development](#-development)
 
 ---
 
-##  Overview
+## Features
 
-This is the backend API service for the Qashio expense tracker application. It provides:
+###  Authentication
+- User registration and login
+- JWT-based authentication
+- Protected routes and API endpoints
+- Secure password hashing with bcrypt
 
-- User authentication and authorization
-- Transaction management (CRUD operations)
-- Category management
-- Budget management
-- Financial summary and analytics
-- User data isolation
-- Comprehensive API documentation
+###  Transactions
+- Create, read, update, and delete transactions
+- Track income and expenses
+- Filter by type, category, date range, and search
+- Transaction descriptions
+- User-specific data isolation
+
+###  Categories
+- Create and manage custom categories
+- Category statistics and insights
+- User-specific categories
+
+###  Budgets
+- Set budgets per category
+- Multiple time periods (daily, weekly, monthly, yearly)
+- Budget progress tracking
+- Budget alerts when approaching limits
+
+###  Dashboard
+- Financial summary (balance, income, expenses)
+- Interactive charts and graphs:
+  - Monthly income vs expenses trend
+  - Category breakdown (pie chart)
+  - Category comparison (current vs previous month)
+  - Category trends over time
+- Recent transactions
+- Top spending categories
+- Budget alerts
 
 ---
 
 ##  Tech Stack
 
-- **Framework**: NestJS 11
-- **Language**: TypeScript 5.7
-- **ORM**: TypeORM 0.3
-- **Database**: PostgreSQL 15
+### 🛠 Backend
+- **Framework**: NestJS with TypeScript
+- **ORM**: TypeORM
+- **Database**: PostgreSQL
 - **Authentication**: JWT (Passport.js)
+- **API Documentation**: Swagger/OpenAPI
 - **Validation**: class-validator, class-transformer
-- **Documentation**: Swagger/OpenAPI
-- **Password Hashing**: bcryptjs
+
+###  Frontend
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript + React 19
+- **UI Library**: Material-UI (MUI) v7
+- **State Management**: React Query (TanStack Query)
+- **Charts**: Recharts
+- **Date Handling**: date-fns
 
 ---
 
 ##  Project Structure
 
 ```
-qashio-api/
-├── src/
-│   ├── auth/                  # Authentication module
-│   │   ├── auth.controller.ts
-│   │   ├── auth.service.ts
-│   │   ├── auth.module.ts
-│   │   ├── dto/               # Data Transfer Objects
-│   │   │   ├── register.dto.ts
-│   │   │   └── login.dto.ts
-│   │   ├── entities/          # Database entities
-│   │   │   └── user.entity.ts
-│   │   ├── guards/            # Auth guards
-│   │   │   └── jwt-auth.guard.ts
-│   │   ├── strategies/        # Passport strategies
-│   │   │   └── jwt.strategy.ts
-│   │   └── decorators/        # Custom decorators
-│   │       └── get-user.decorator.ts
-│   ├── transactions/          # Transactions module
-│   │   ├── transactions.controller.ts
-│   │   ├── transactions.service.ts
-│   │   ├── transactions.module.ts
-│   │   ├── entities/
-│   │   │   └── transaction.entity.ts
-│   │   └── dto/
-│   │       ├── create-transaction.dto.ts
-│   │       └── update-transaction.dto.ts
-│   ├── categories/            # Categories module
-│   │   ├── categories.controller.ts
-│   │   ├── categories.service.ts
-│   │   ├── categories.module.ts
-│   │   ├── entities/
-│   │   │   └── category.entity.ts
-│   │   └── dto/
-│   │       └── create-category.dto.ts
-│   ├── budgets/              # Budgets module
-│   │   ├── budgets.controller.ts
-│   │   ├── budgets.service.ts
-│   │   ├── budgets.module.ts
-│   │   ├── budget.interface.ts
-│   │   └── dto/
-│   │       ├── create-budget.dto.ts
-│   │       └── update-budget.dto.ts
-│   ├── database/             # Database utilities
-│   │   └── init-database.ts
-│   ├── app.module.ts         # Root module
-│   ├── app.controller.ts
-│   ├── app.service.ts
-│   └── main.ts              # Application entry point
-├── test/                    # E2E tests
-├── package.json
-├── tsconfig.json
-└── README.md
+assistment/
+├── qashio-api/                 # Backend API (NestJS)
+│   ├── src/
+│   │   ├── auth/              # Authentication module
+│   │   ├── transactions/      # Transactions module
+│   │   ├── categories/        # Categories module
+│   │   ├── budgets/           # Budgets module
+│   │   └── database/          # Database initialization
+│   └── README.md
+├── qashio-frontend-assignment/ # Frontend (Next.js)
+│   ├── app/
+│   │   ├── api/               # Next.js API routes (proxy)
+│   │   ├── components/        # React components
+│   │   ├── hooks/             # Custom React hooks
+│   │   └── ...
+│   └── README.md
+├── docker-compose.yml         # Docker configuration
+└── README.md                  # This file
 ```
+
+---
+
+##  Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- **Node.js** (v18 or higher)
+- **npm** or **yarn**
+- **PostgreSQL** (v15 or higher)
+- **Docker** and **Docker Compose** (optional, for containerized setup)
 
 ---
 
 ##  Getting Started
 
-### Prerequisites
+### Option 1: Using Docker (Recommended)
 
-- Node.js (v18 or higher)
-- PostgreSQL (v15 or higher)
-- npm or yarn
-
-### Installation
-
-1. **Install dependencies**
+The easiest way to run the entire application:
 
 ```bash
+docker-compose up --build
+```
+
+This will:
+- Build Docker images for both frontend and backend
+- Start PostgreSQL database
+- Start Redis (if configured)
+- Start Kafka (if configured)
+- Start the backend API on port 3000
+- Start the frontend on port 4000
+
+Access the application:
+- Frontend: http://localhost:4000
+- Backend API: http://localhost:3000
+- Swagger Docs: http://localhost:3000/api
+
+### Option 2: Manual Setup
+
+#### 1. Clone the repository
+
+```bash
+git clone <repository-url>
+cd assistment
+```
+
+#### 2. Set up the Backend
+
+```bash
+cd qashio-api
 npm install
-```
 
-2. **Set up environment variables**
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your database credentials
 
-Create a `.env` file in the root directory:
+# Start PostgreSQL (if not running)
+# Then run migrations/initialize database
 
-```env
-# Database
-DATABASE_URL=postgresql://postgres:password@localhost:5432/qashio_points
-
-# JWT
-JWT_SECRET=your-secret-key-change-in-production
-
-# Server
-PORT=3001
-NODE_ENV=development
-```
-
-3. **Initialize the database**
-
-The application will automatically create the database and tables on first run.
-
-4. **Start the development server**
-
-```bash
 npm run start:dev
 ```
 
-The API will be available at `http://localhost:3001`
+The backend will run on `http://localhost:3001` (or port specified in `.env`)
 
-### Production Build
+#### 3. Set up the Frontend
 
 ```bash
+cd qashio-frontend-assignment
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your backend URL
+
+npm run dev
+```
+
+The frontend will run on `http://localhost:3000`
+
+---
+
+## 🔧 Running the Application
+
+### Backend
+
+```bash
+cd qashio-api
+
+# Development mode
+npm run start:dev
+
+# Production build
 npm run build
 npm run start:prod
 ```
 
+### Frontend
+
+```bash
+cd qashio-frontend-assignment
+
+# Development mode
+npm run dev
+
+# Production build
+npm run build
+npm run start
+```
+
 ---
 
-##  API Endpoints
+##  API Documentation
+
+Once the backend is running, you can access the interactive API documentation:
+
+**Swagger UI**: http://localhost:3001/api
+
+The API documentation includes:
+- All available endpoints
+- Request/response schemas
+- Authentication requirements
+- Try-it-out functionality
 
 ### Authentication
-
-#### Register User
-```http
-POST /auth/register
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "password123",
-  "name": "John Doe"
-}
-```
-
-#### Login
-```http
-POST /auth/login
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "password123"
-}
-```
-
-**Response:**
-```json
-{
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": "uuid",
-    "email": "user@example.com",
-    "name": "John Doe"
-  }
-}
-```
-
-### Transactions
-
-All transaction endpoints require JWT authentication.
-
-#### Get All Transactions
-```http
-GET /transactions?type=expense&category=Food&startDate=2024-01-01&endDate=2024-12-31&search=groceries
-Authorization: Bearer <token>
-```
-
-#### Get Transaction Summary
-```http
-GET /transactions/summary?startDate=2024-01-01&endDate=2024-12-31&type=expense
-Authorization: Bearer <token>
-```
-
-**Response:**
-```json
-{
-  "totalIncome": 5000.00,
-  "totalExpenses": 3000.00,
-  "balance": 2000.00,
-  "transactionCount": 25,
-  "byCategory": [
-    {
-      "category": "Food",
-      "total": 1200.00,
-      "count": 15
-    }
-  ],
-  "byMonth": [
-    {
-      "month": "2024-01",
-      "income": 2000.00,
-      "expenses": 1500.00
-    }
-  ]
-}
-```
-
-#### Create Transaction
-```http
-POST /transactions
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "amount": 50.00,
-  "category": "Food",
-  "date": "2024-01-15",
-  "type": "expense",
-  "description": "Grocery shopping"
-}
-```
-
-#### Get Transaction by ID
-```http
-GET /transactions/:id
-Authorization: Bearer <token>
-```
-
-#### Update Transaction
-```http
-PUT /transactions/:id
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "amount": 60.00,
-  "description": "Updated description"
-}
-```
-
-#### Delete Transaction
-```http
-DELETE /transactions/:id
-Authorization: Bearer <token>
-```
-
-### Categories
-
-#### Get All Categories
-```http
-GET /categories
-Authorization: Bearer <token>
-```
-
-#### Create Category
-```http
-POST /categories
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "name": "Entertainment"
-}
-```
-
-#### Get Category by ID
-```http
-GET /categories/:id
-Authorization: Bearer <token>
-```
-
-### Budgets
-
-#### Get All Budgets
-```http
-GET /budgets?withSpending=true
-Authorization: Bearer <token>
-```
-
-#### Create Budget
-```http
-POST /budgets
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "category": "Food",
-  "amount": 500.00,
-  "timePeriod": "monthly",
-  "startDate": "2024-01-01"
-}
-```
-
-#### Get Budget by ID
-```http
-GET /budgets/:id?withSpending=true
-Authorization: Bearer <token>
-```
-
-#### Update Budget
-```http
-PATCH /budgets/:id
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "amount": 600.00
-}
-```
-
-#### Delete Budget
-```http
-DELETE /budgets/:id
-Authorization: Bearer <token>
-```
-
----
-
-##  Authentication
 
 All protected endpoints require a JWT token in the Authorization header:
 
@@ -356,213 +230,201 @@ All protected endpoints require a JWT token in the Authorization header:
 Authorization: Bearer <your-jwt-token>
 ```
 
-### How Authentication Works
+---
 
-1. User registers or logs in via `/auth/register` or `/auth/login`
-2. Server returns a JWT token
-3. Client includes the token in subsequent requests
-4. Server validates the token and extracts user information
-5. All data operations are filtered by the authenticated user's ID
+##  Features Overview
 
-### Security Features
+### Implemented Features
 
-- Passwords are hashed using bcrypt (10 rounds)
-- JWT tokens expire (configurable)
-- All protected routes use `JwtAuthGuard`
-- User data is isolated - users can only access their own data
+#### Backend
+- JWT-based authentication
+- User registration and login
+- CRUD operations for transactions
+- CRUD operations for categories
+- CRUD operations for budgets
+- Transaction summary endpoint with filtering
+- Advanced filtering and pagination
+- Swagger/OpenAPI documentation
+- Input validation with DTOs
+- Custom decorators and guards
+- User data isolation (each user sees only their data)
+- Error handling
+
+#### Frontend
+- User authentication (login/register)
+- Protected routes
+- Dashboard with financial overview
+- Interactive charts and graphs
+- Transaction management (CRUD)
+- Category management
+- Budget management
+- Advanced filtering and search
+- Responsive design
+- Loading states and error handling
+- Empty state handling
 
 ---
 
-##  Database Schema
+##  Backend Requirements
 
-### Users Table
-```sql
-CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  email VARCHAR UNIQUE NOT NULL,
-  password VARCHAR NOT NULL,
-  name VARCHAR NOT NULL,
-  "createdAt" TIMESTAMP DEFAULT NOW(),
-  "updatedAt" TIMESTAMP DEFAULT NOW()
-);
-```
+###  Transactions
+CRUD operations for tracking individual entries:
 
-### Transactions Table
-```sql
-CREATE TABLE transactions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  "userId" UUID NOT NULL,
-  amount DECIMAL(10, 2) NOT NULL,
-  category VARCHAR NOT NULL,
-  date DATE NOT NULL,
-  type VARCHAR NOT NULL CHECK (type IN ('income', 'expense')),
-  description TEXT,
-  "createdAt" TIMESTAMP DEFAULT NOW(),
-  "updatedAt" TIMESTAMP DEFAULT NOW()
-);
-```
+- Properties:
+  - `amount` 
+  - `category` 
+  - `date` 
+  - `type` (`income` | `expense`)
+  - `description` 
 
-### Categories Table
-```sql
-CREATE TABLE categories (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  "userId" UUID NOT NULL,
-  name VARCHAR NOT NULL,
-  "createdAt" TIMESTAMP DEFAULT NOW(),
-  "updatedAt" TIMESTAMP DEFAULT NOW()
-);
-```
+###  Categories
+- Users can create and list categories
+- Each transaction must belong to a category
+- User-specific categories
 
-### Budgets
-Currently stored in-memory. Can be migrated to database if needed.
+###  Budgets Module
+- Set a budget (e.g., $500) per category over a time period (e.g., monthly)
+- View current spending vs. budget
+- Budget alerts when approaching limits
 
 ---
 
-## ⚙️ Environment Variables
+##  Frontend Requirements
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | Required |
-| `JWT_SECRET` | Secret key for JWT signing | Required |
-| `PORT` | Server port | 3000 |
-| `NODE_ENV` | Environment (development/production) | development |
+###  `/transactions` Page
+- Fetch transaction data with React Query
+- Display paginated table
+- Support sortable columns and filters
+- Inline editing capability
+
+###  Transaction Detail View
+- Click a row → open a modal
+- Display full transaction details
+
+###  Create Transaction (`/transactions/new`)
+- Form for adding a new transaction
+- Includes category dropdown, date picker, and type selector
+- Description field
+
+###  UX & Resilience
+- Loading spinners and skeletons
+- MUI alerts on error
+- Empty states handling
+- Toast notifications
 
 ---
 
-## 🛠️ Development
+##  Bonus Features Implemented
 
-### Available Scripts
+### Backend
+- JWT-based authentication
+- Custom decorators (`@GetUser`)
+- Guards (`JwtAuthGuard`)
+- Summary/report endpoint
+- Filtering, sorting & pagination
+- Swagger/OpenAPI documentation
+- User data isolation
+
+### Frontend
+- Form validation
+- Advanced state management (React Query)
+- UI/UX enhancements
+- Comprehensive dashboard
+- Multiple chart types
+- Filtering, sorting & pagination
+- Responsive design
+
+---
+
+##  Security Features
+
+- JWT token-based authentication
+- Password hashing with bcrypt
+- Protected API endpoints
+- User data isolation
+- Input validation and sanitization
+- CORS configuration
+
+---
+
+##  Environment Variables
+
+### Backend (qashio-api)
+
+Create a `.env` file in the `qashio-api` directory:
+
+```env
+DATABASE_URL=postgresql://postgres:password@localhost:5432/qashio_points
+JWT_SECRET=your-secret-key-change-in-production
+PORT=3001
+```
+
+### Frontend (qashio-frontend-assignment)
+
+Create a `.env.local` file in the `qashio-frontend-assignment` directory:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3001
+BACKEND_PORT=3001
+```
+
+---
+
+## 🧪 Testing
+
+### Backend Tests
 
 ```bash
-# Development
-npm run start:dev      # Start in watch mode
-npm run start:debug    # Start in debug mode
+cd qashio-api
 
-# Production
-npm run build          # Build for production
-npm run start:prod     # Start production server
-
-# Code Quality
-npm run lint           # Run ESLint
-npm run format         # Format code with Prettier
-
-# Testing
-npm run test           # Run unit tests
-npm run test:watch     # Run tests in watch mode
-npm run test:cov       # Run tests with coverage
-npm run test:e2e       # Run end-to-end tests
-```
-
-### Code Structure
-
-- **Modules**: Each feature is a separate module (auth, transactions, categories, budgets)
-- **DTOs**: Data Transfer Objects for request validation
-- **Entities**: TypeORM entities representing database tables
-- **Guards**: Route protection (JWT authentication)
-- **Decorators**: Custom decorators for extracting user info
-- **Services**: Business logic
-- **Controllers**: Request handling and routing
-
----
-
-##  Testing
-
-### Unit Tests
-
-```bash
+# Unit tests
 npm run test
-```
 
-### E2E Tests
-
-```bash
+# E2E tests
 npm run test:e2e
-```
 
-### Test Coverage
-
-```bash
+# Test coverage
 npm run test:cov
 ```
 
----
-
-##  API Documentation
-
-Once the server is running, access the interactive Swagger documentation:
-
-**Swagger UI**: http://localhost:3001/api
-
-The documentation includes:
-- All available endpoints
-- Request/response schemas
-- Authentication requirements
-- Try-it-out functionality
-- Example requests and responses
-
----
-
-##  Security Best Practices
-
-1. **Password Security**
-   - Passwords are hashed with bcrypt (10 rounds)
-   - Never return passwords in API responses
-
-2. **JWT Tokens**
-   - Tokens are signed with a secret key
-   - Tokens should be stored securely on the client
-   - Consider implementing token refresh
-
-3. **Data Isolation**
-   - All queries filter by `userId`
-   - Users can only access their own data
-   - No cross-user data leakage
-
-4. **Input Validation**
-   - All inputs are validated using DTOs
-   - SQL injection prevention via TypeORM
-   - XSS prevention through proper sanitization
-
----
-
-##  Troubleshooting
-
-### Database Connection Issues
+### Frontend Tests
 
 ```bash
-# Check if PostgreSQL is running
-sudo systemctl status postgresql
+cd qashio-frontend-assignment
 
-# Check connection string in .env
-# Ensure database exists
+# Run tests
+npm test
 ```
 
-### Port Already in Use
+---
 
-```bash
-# Change PORT in .env file
-# Or kill the process using the port
-lsof -ti:3001 | xargs kill -9
-```
+##  Additional Documentation
 
-### JWT Token Issues
+- [Backend API README](./qashio-api/README.md) - Detailed backend documentation
+- [Frontend README](./qashio-frontend-assignment/README.md) - Detailed frontend documentation
 
-- Ensure `JWT_SECRET` is set in `.env`
-- Check token expiration
-- Verify token format in Authorization header
+---
+
+##  Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ---
 
 ##  License
 
-This project is private and proprietary.
+This project is public and open source.
 
 ---
 
-##  Contributors
+##  Authors
 
 - Development Team
 
 ---
 
-For more information, see the [main README](../README.md).
+Happy tracking! 💸
