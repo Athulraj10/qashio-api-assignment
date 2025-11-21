@@ -21,8 +21,7 @@ import { User } from './auth/entities/user.entity';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
         const databaseUrl = configService.get<string>('DATABASE_URL');
-        
-        // Parse DATABASE_URL if provided, otherwise use individual env vars
+
         if (databaseUrl) {
           const url = new URL(databaseUrl);
           return {
@@ -31,14 +30,14 @@ import { User } from './auth/entities/user.entity';
             port: parseInt(url.port) || 5432,
             username: url.username,
             password: url.password,
-            database: url.pathname.slice(1), // Remove leading '/'
+            database: url.pathname.slice(1),
             entities: [Transaction, Category, User],
-            synchronize: true, // Set to false in production
+            synchronize: true,
             logging: false,
           };
         }
-        
-        // Fallback to individual environment variables
+
+
         return {
           type: 'postgres',
           host: configService.get<string>('DB_HOST', 'localhost'),
@@ -47,7 +46,7 @@ import { User } from './auth/entities/user.entity';
           password: configService.get<string>('DB_PASSWORD', 'password'),
           database: configService.get<string>('DB_DATABASE', 'qashio_points'),
           entities: [Transaction, Category],
-          synchronize: true, // Set to false in production
+          synchronize: true,
           logging: false,
         };
       },
@@ -61,4 +60,4 @@ import { User } from './auth/entities/user.entity';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

@@ -9,10 +9,10 @@ export class CategoriesService {
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
-  ) {}
+  ) { }
 
   async create(createCategoryDto: CreateCategoryDto, userId: string | null): Promise<Category> {
-    // Check if category already exists for this user
+
     const where: any = { name: createCategoryDto.name };
     if (userId) {
       where.userId = userId;
@@ -35,7 +35,6 @@ export class CategoriesService {
   }
 
   async findAll(userId?: string | null): Promise<Category[]> {
-    // Always filter by userId - if not provided, return empty array (security: don't show all users' data)
     if (!userId) {
       return [];
     }

@@ -10,7 +10,7 @@ export class TransactionsService {
   constructor(
     @InjectRepository(Transaction)
     private readonly transactionRepository: Repository<Transaction>,
-  ) {}
+  ) { }
 
   async create(createTransactionDto: CreateTransactionDto, userId: string | null): Promise<Transaction> {
     const transaction = this.transactionRepository.create({
@@ -33,7 +33,6 @@ export class TransactionsService {
   }, userId?: string | null): Promise<Transaction[]> {
     const queryBuilder = this.transactionRepository.createQueryBuilder('transaction');
 
-    // Always filter by userId - if not provided, return empty array (security: don't show all users' data)
     if (!userId) {
       return [];
     }
@@ -82,7 +81,6 @@ export class TransactionsService {
   }> {
     const queryBuilder = this.transactionRepository.createQueryBuilder('transaction');
 
-    // Always filter by userId - if not provided, return empty summary (security: don't show all users' data)
     if (!userId) {
       return {
         totalIncome: 0,
@@ -119,7 +117,7 @@ export class TransactionsService {
 
     const balance = totalIncome - totalExpenses;
 
-    // Group by category
+
     const categoryMap = new Map<string, { total: number; count: number }>();
     transactions.forEach(t => {
       const existing = categoryMap.get(t.category) || { total: 0, count: 0 };
@@ -135,7 +133,7 @@ export class TransactionsService {
       count: data.count,
     })).sort((a, b) => b.total - a.total);
 
-    // Group by month
+
     const monthMap = new Map<string, { income: number; expenses: number }>();
     transactions.forEach(t => {
       const date = new Date(t.date);
@@ -183,7 +181,7 @@ export class TransactionsService {
     userId?: string | null,
   ): Promise<Transaction> {
     const transaction = await this.findOne(id, userId);
-    
+
     if (updateTransactionDto.amount !== undefined) {
       transaction.amount = updateTransactionDto.amount;
     }
@@ -199,7 +197,7 @@ export class TransactionsService {
     if (updateTransactionDto.description !== undefined) {
       transaction.description = updateTransactionDto.description || null;
     }
-    
+
     return await this.transactionRepository.save(transaction);
   }
 
