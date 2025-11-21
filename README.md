@@ -1,10 +1,10 @@
-# 🚀 Qashio API - Backend Service
+#  Qashio API - Backend Service
 
 A robust RESTful API built with **NestJS** for managing expenses, transactions, budgets, and categories with JWT authentication and comprehensive data validation.
 
 ---
 
-## 📋 Table of Contents
+##  Table of Contents
 
 - [Overview](#overview)
 - [Tech Stack](#tech-stack)
@@ -19,7 +19,7 @@ A robust RESTful API built with **NestJS** for managing expenses, transactions, 
 
 ---
 
-## 🎯 Overview
+##  Overview
 
 This is the backend API service for the Qashio expense tracker application. It provides:
 
@@ -33,7 +33,7 @@ This is the backend API service for the Qashio expense tracker application. It p
 
 ---
 
-## 🧰 Tech Stack
+##  Tech Stack
 
 - **Framework**: NestJS 11
 - **Language**: TypeScript 5.7
@@ -46,7 +46,7 @@ This is the backend API service for the Qashio expense tracker application. It p
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 qashio-api/
@@ -105,7 +105,7 @@ qashio-api/
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
@@ -158,7 +158,7 @@ npm run start:prod
 
 ---
 
-## 📡 API Endpoints
+##  API Endpoints
 
 ### Authentication
 
@@ -348,7 +348,7 @@ Authorization: Bearer <token>
 
 ---
 
-## 🔐 Authentication
+##  Authentication
 
 All protected endpoints require a JWT token in the Authorization header:
 
@@ -373,7 +373,7 @@ Authorization: Bearer <your-jwt-token>
 
 ---
 
-## 🗄️ Database Schema
+##  Database Schema
 
 ### Users Table
 ```sql
@@ -465,7 +465,7 @@ npm run test:e2e       # Run end-to-end tests
 
 ---
 
-## 🧪 Testing
+##  Testing
 
 ### Unit Tests
 
@@ -487,7 +487,7 @@ npm run test:cov
 
 ---
 
-## 📚 API Documentation
+##  API Documentation
 
 Once the server is running, access the interactive Swagger documentation:
 
@@ -502,7 +502,7 @@ The documentation includes:
 
 ---
 
-## 🔒 Security Best Practices
+##  Security Best Practices
 
 1. **Password Security**
    - Passwords are hashed with bcrypt (10 rounds)
@@ -525,7 +525,7 @@ The documentation includes:
 
 ---
 
-## 🐛 Troubleshooting
+##  Troubleshooting
 
 ### Database Connection Issues
 
@@ -553,13 +553,13 @@ lsof -ti:3001 | xargs kill -9
 
 ---
 
-## 📝 License
+##  License
 
 This project is private and proprietary.
 
 ---
 
-## 👥 Contributors
+##  Contributors
 
 - Development Team
 
